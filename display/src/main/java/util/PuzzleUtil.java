@@ -40,4 +40,8 @@ public class PuzzleUtil {
         return Files.newDirectoryStream(path);
     }
 
+    public static void main(String[] args) throws IOException, URISyntaxException {
+        getAllPuzzleDir();
+    }
+
 }

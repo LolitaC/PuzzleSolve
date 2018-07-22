@@ -9,8 +9,8 @@
         <module name="display" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="display" target="1.5" />
+    <bytecodeTargetLevel target="10">
+      <module name="display" target="10" />
     </bytecodeTargetLevel>
   </component>
 </project>

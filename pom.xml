@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>top.lolitac</groupId>
+    <artifactId>puzzle-solve</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>PuzzleSolve</name>
+    <!-- 子模块 -->
+    <modules>
+        <module>display</module>
+    </modules>
+    <!-- 常量 -->
+    <properties>
+        <!--指定Maven用什么编码来读取源码及文档 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!--指定Maven用什么编码来呈现站点的HTML文件 -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+    </properties>
+    <!-- 声明子项目可能用到的依赖 -->
+    <dependencyManagement>
+        
+        
+    </dependencyManagement>
+    <!-- 插件 -->
+    <build>
+        
+    </build>
+</project>

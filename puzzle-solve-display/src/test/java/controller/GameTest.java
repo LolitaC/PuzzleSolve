@@ -36,8 +36,8 @@ public class GameTest extends Application {
         primaryStage.setTitle("PixelWriter Test");
         root = new Group();
         canvas = new Canvas(200, 200);
-        canvas.setTranslateX(100);
-        canvas.setTranslateY(100);
+//        canvas.setTranslateX(100);
+//        canvas.setTranslateY(100);
         gc = canvas.getGraphicsContext2D();
         createImageData();
         drawImageData();

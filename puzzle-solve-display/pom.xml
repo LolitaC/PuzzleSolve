@@ -11,6 +11,13 @@
     </parent>
     <artifactId>puzzle-solve-display</artifactId>
     <name>puzzle-solve-display</name>
+    <dependencies>
+        <dependency>
+            <groupId>top.lolitac</groupId>
+            <artifactId>puzzle-solve-common</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>

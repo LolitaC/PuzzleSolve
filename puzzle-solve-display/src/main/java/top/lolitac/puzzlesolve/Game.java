@@ -18,20 +18,41 @@ public class Game extends Application {
     /**
      * imgWidth 图片大小
      */
-    int imgWidth;
-    int imgHeight;
+    private int imgWidth;
+    private int imgHeight;
 
     /**
      * 图片切割成{@code rows}行 {@code columns}列
      */
-    int rows;
-    int columns;
+    private int rows;
+    private int columns;
 
     /**
      * 隐藏的图片的x跟y
      */
-    int hiddenX;
-    int hiddenY;
+    private int hiddenX;
+    private int hiddenY;
+
+    /**
+     * ImageView数组中隐藏图片的下标
+     */
+    private int hiddexIndex;
+
+    /**
+     * 隐藏图片的url
+     */
+    private String hiddenImageUrl = "Transparent.png";
+
+    /**
+     * 存储隐藏图片
+     */
+    ImageView hiddexImageView;
+
+    /**
+     * imageView[] 存储图片的数组
+     */
+    private ImageView[] imageView;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         String url = "puzzle/20180313171128.png";
@@ -45,7 +66,7 @@ public class Game extends Application {
 
         imgWidth = width/columns;
         imgHeight = height/rows;
-        ImageView[] imageView = new ImageView[rows * columns];
+        imageView = new ImageView[rows * columns];
 
         // 生成随机数组
         int[] a = random(rows*columns);
@@ -59,10 +80,15 @@ public class Game extends Application {
             }
         }
 
+        hiddexImageView = new ImageView(hiddenImageUrl);
+        hiddexImageView.setOnMouseClicked(new PuzzleMoveOnMouse());
+        hiddexImageView.setViewport(new Rectangle2D(0,0,imgWidth,imgHeight));
+
         // 图片随机分布，并隐藏最后一张
         for(int i = 0, k = 0; i < rows; ++i) {
             for(int j = 0; j < columns; ++j, ++k) {
                 if(k == a.length-1){
+                    gridPane.add(hiddexImageView,j,i);
                     break;
                 }
                 gridPane.add(imageView[a[k]],j,i);
@@ -71,6 +97,7 @@ public class Game extends Application {
 
         hiddenX = rows;
         hiddenY = columns;
+        hiddexIndex = a[rows*columns-1];
 
         gridPane.setGridLinesVisible(true);
         Scene scene = new Scene(gridPane, width, height);
@@ -78,8 +105,6 @@ public class Game extends Application {
         primaryStage.setResizable(false);
         primaryStage.show();
     }
-
-
 
     public static void main(String[] args) {
         Game.launch(args);
@@ -90,8 +115,15 @@ public class Game extends Application {
         @Override
         public void handle(MouseEvent event) {
             ImageView img = (ImageView)event.getSource();
-            System.out.println(img.getLayoutX()/imgWidth);
-            System.out.println(img.getLayoutY()/imgHeight);
+            int clickX = (int)img.getLayoutX()/imgWidth + 1;
+            int clickY = (int)img.getLayoutY()/imgHeight + 1;
+            if(hiddenImageCanMove(clickX,clickY)){
+                if(swapImageView(img, hiddexImageView)){
+                    hiddenX = clickX;
+                    hiddenY = clickY;
+                }
+            }
+
         }
     }
 
@@ -117,4 +149,46 @@ public class Game extends Application {
 
         return randomArray;
     }
+
+    /**
+     * 判断隐藏图片是否可以移动
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @return {@code true} or {@code false}
+     */
+    private boolean hiddenImageCanMove(int x,int y){
+        if( x == hiddenX || y == hiddenY){
+            if( x + y == hiddenX + hiddenY -1 || x + y == hiddenX + hiddenY +1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 交换两个ImageView的内容
+     *
+     * @param imageView1 [ImageView]
+     * @param imageView2 [ImageView]
+     * @return 0:success 1:failure
+     */
+    private boolean swapImageView(ImageView imageView1,ImageView imageView2){
+        Integer row1 = GridPane.getRowIndex(imageView1);
+        Integer colu1 = GridPane.getColumnIndex(imageView1);
+        Integer row2 = GridPane.getRowIndex(imageView2);
+        Integer colu2 = GridPane.getColumnIndex(imageView2);
+
+//        System.out.println("row1:" + row1);
+//        System.out.println("colu1:" + colu1);
+//        System.out.println("row2:" + row2);
+//        System.out.println("colu2:" + colu2);
+
+        GridPane.setRowIndex(imageView1, row2);
+        GridPane.setColumnIndex(imageView1, colu2);
+        GridPane.setRowIndex(imageView2, row1);
+        GridPane.setColumnIndex(imageView2, colu1);
+        return true;
+    }
+
 }

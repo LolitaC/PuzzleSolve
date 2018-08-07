@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import top.lolitac.puzzlesolve.commons.entity.ByteArrayImage;
 import top.lolitac.puzzlesolve.commons.entity.EnumByteArrayType;
 import top.lolitac.puzzlesolve.commons.util.ImageUtil;
-import top.lolitac.puzzlesolve.helper.GameHelper;
 
 import java.util.List;
 

@@ -8,7 +8,8 @@
     <name>PuzzleSolve</name>
     <!-- 子模块 -->
     <modules>
-        <module>display</module>
+        <module>puzzle-solve-display</module>
+        <module>puzzle-solve-common</module>
     </modules>
     <!-- 常量 -->
     <properties>
@@ -16,6 +17,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--指定Maven用什么编码来呈现站点的HTML文件 -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>10</maven.compiler.source>
+        <maven.compiler.target>10</maven.compiler.target>
         
     </properties>
     <!-- 声明子项目可能用到的依赖 -->

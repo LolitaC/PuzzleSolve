@@ -5,6 +5,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.*;
 import javafx.stage.Stage;
+import top.lolitac.puzzlesolve.commons.entity.ByteArrayImage;
+import top.lolitac.puzzlesolve.commons.entity.EnumByteArrayType;
+import top.lolitac.puzzlesolve.commons.util.ImageUtil;
+import top.lolitac.puzzlesolve.helper.GameHelper;
+
+import java.util.List;
 
 public class test extends Application{
 
@@ -15,21 +21,19 @@ public class test extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //加载图片
-        Image image = new Image("puzzle/javafx-documentation.png");
 
-        PixelReader pixelReader = image.getPixelReader();
-        //图片高度
-        int image_height = (int)image.getHeight();
-        //图片宽度
-        int image_width = (int)image.getWidth();
+//        String url = "puzzle/javafx-documentation.png";
+//        GameHelper gameHelper = new GameHelper(url,2,2);
+
+        int[] imageSize ;
         //图片缓存区， rgba格式
-        byte[] imageData = new byte[image_height*image_width*4];
-        /**
-         * pixelReader.getPixels
-         * @param scanlineStride 一行数据与另一行数据之间的距离（每次读取一行）
-         */
-        pixelReader.getPixels(0,0,image_width,image_height, WritablePixelFormat.getByteBgraInstance(),imageData,0,image_width*4);
+        List<ByteArrayImage> list = ImageUtil.getByteArrayList("puzzle/javafx-documentation.png", EnumByteArrayType.ARGB,2,2);
+        ByteArrayImage imageData = list.get(1);
+
+        //图片高度
+        int image_height = imageData.getHeight();
+        //图片宽度
+        int image_width = imageData.getWidth();
 
         root = new Group();
         canvas = new Canvas(200, 200);
@@ -39,9 +43,11 @@ public class test extends Application{
         canvas.setTranslateY(100);
         gc = canvas.getGraphicsContext2D();
         PixelWriter pixelWriter = gc.getPixelWriter();
-        pixelWriter.setPixels(0,0,image_width,image_height,PixelFormat.getByteBgraInstance(),imageData,0,image_width*4);
+        pixelWriter.setPixels(0,0,image_width,image_height,PixelFormat.getByteBgraInstance(),imageData.getByteArray(),0,image_width*4);
         root.getChildren().add(canvas);
         primaryStage.setScene(new Scene(root, 200, 200));
         primaryStage.show();
+
+
     }
 }

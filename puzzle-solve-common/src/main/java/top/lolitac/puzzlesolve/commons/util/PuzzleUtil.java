@@ -1,4 +1,4 @@
-package util;
+package top.lolitac.puzzlesolve.commons.util;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

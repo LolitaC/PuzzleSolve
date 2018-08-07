@@ -53,6 +53,19 @@ public class Game extends Application {
      */
     private ImageView[] imageView;
 
+
+    /**
+     * startTime 游戏开始时间
+     */
+    private long startTime;
+
+    /**
+     * endTime 游戏结束时间
+     */
+    private long endTime;
+
+    private boolean isGameOver;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         String url = "puzzle/20180313171128.png";
@@ -61,8 +74,8 @@ public class Game extends Application {
         Image image = new Image(url);
         int width = (int)image.getWidth();
         int height = (int)image.getHeight();
-        rows = 4;
-        columns = 4;
+        rows = 3;
+        columns = 3;
 
         imgWidth = width/columns;
         imgHeight = height/rows;
@@ -104,6 +117,9 @@ public class Game extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+
+        startTime = System.currentTimeMillis();
+        isGameOver = false;
     }
 
     public static void main(String[] args) {
@@ -114,13 +130,26 @@ public class Game extends Application {
     private class PuzzleMoveOnMouse implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
+
+            if(isGameOver){
+                System.out.println("游戏已经结束.");
+                return;
+            }
+
             ImageView img = (ImageView)event.getSource();
-            int clickX = (int)img.getLayoutX()/imgWidth + 1;
-            int clickY = (int)img.getLayoutY()/imgHeight + 1;
+            int clickX = GridPane.getColumnIndex(img) + 1;
+            int clickY = GridPane.getRowIndex(img) + 1;
             if(hiddenImageCanMove(clickX,clickY)){
                 if(swapImageView(img, hiddexImageView)){
                     hiddenX = clickX;
                     hiddenY = clickY;
+
+                    if(checkGameOver()){
+                        isGameOver = true;
+                        endTime = System.currentTimeMillis();
+                        System.out.println("游戏结束,恭喜完成拼图.");
+                        System.out.println("耗时:"+ (endTime-startTime) + "ms");
+                    }
                 }
             }
 
@@ -158,6 +187,7 @@ public class Game extends Application {
      * @return {@code true} or {@code false}
      */
     private boolean hiddenImageCanMove(int x,int y){
+
         if( x == hiddenX || y == hiddenY){
             if( x + y == hiddenX + hiddenY -1 || x + y == hiddenX + hiddenY +1){
                 return true;
@@ -167,7 +197,7 @@ public class Game extends Application {
     }
 
     /**
-     * 交换两个ImageView的内容
+     * 交换两个ImageView的位置
      *
      * @param imageView1 [ImageView]
      * @param imageView2 [ImageView]
@@ -179,15 +209,30 @@ public class Game extends Application {
         Integer row2 = GridPane.getRowIndex(imageView2);
         Integer colu2 = GridPane.getColumnIndex(imageView2);
 
-//        System.out.println("row1:" + row1);
-//        System.out.println("colu1:" + colu1);
-//        System.out.println("row2:" + row2);
-//        System.out.println("colu2:" + colu2);
-
         GridPane.setRowIndex(imageView1, row2);
         GridPane.setColumnIndex(imageView1, colu2);
         GridPane.setRowIndex(imageView2, row1);
         GridPane.setColumnIndex(imageView2, colu1);
+        return true;
+    }
+
+
+    /**
+     * 测试游戏是否结束
+     *
+     * @return {@code true} or {@code false}
+     */
+    private boolean checkGameOver(){
+
+        for(int i=0,k=0;i<rows;i++){
+            for(int j=0;j<columns;j++,k++){
+                Integer rowIndex = GridPane.getRowIndex(imageView[k]);
+                Integer columnIndex = GridPane.getColumnIndex(imageView[k]);
+                if( rowIndex!=null && columnIndex!=null && (rowIndex!=i || columnIndex!=j)){
+                    return false;
+                }
+            }
+        }
         return true;
     }
 

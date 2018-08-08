@@ -103,7 +103,7 @@ public class Game extends Application {
         hiddexImageView.setViewport(new Rectangle2D(0,0,imgWidth,imgHeight));
         imageView[hiddexIndex] = hiddexImageView;
         hiddenX = hiddexIndex%columns + 1;
-        hiddenY = hiddexIndex/rows + 1;
+        hiddenY = hiddexIndex/columns + 1;
 
         System.err.println("图片排序中,请稍等......");
         do{
@@ -143,7 +143,7 @@ public class Game extends Application {
         public void handle(MouseEvent event) {
 
             if(isGameOver){
-                System.out.println("游戏已经结束.");
+                System.out.println("游戏已经结束啦.");
                 return;
             }
 
@@ -152,6 +152,11 @@ public class Game extends Application {
             int clickY = GridPane.getRowIndex(img) + 1;
             if(hiddenImageCanMove(clickX,clickY)){
                 if(swapImageView(img, hiddexImageView)){
+
+                    int i = index[(clickY-1)*columns+clickX-1];
+                    index[(clickY-1)*columns+clickX-1] = index[(hiddenY-1)*columns+hiddenX-1];
+                    index[(hiddenY-1)*columns+hiddenX-1] = i;
+
                     hiddenX = clickX;
                     hiddenY = clickY;
 
@@ -240,9 +245,6 @@ public class Game extends Application {
         GridPane.setRowIndex(imageView2, row1);
         GridPane.setColumnIndex(imageView2, colu1);
 
-        int img = index[row1*columns+colu1];
-        index[row1*columns+colu1] = index[(hiddenY-1)*columns+hiddenX-1];
-        index[(hiddenY-1)*columns+hiddenX-1] = img;
         return true;
     }
 

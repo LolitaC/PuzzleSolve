@@ -34,11 +34,6 @@ public class Game extends Application {
     private int hiddenY;
 
     /**
-     * ImageView数组中隐藏图片的下标
-     */
-    private int hiddexIndex;
-
-    /**
      * 隐藏图片的url
      */
     private String hiddenImageUrl = "Transparent.png";
@@ -66,6 +61,11 @@ public class Game extends Application {
 
     private boolean isGameOver;
 
+    /**
+     * 拼图图片索引
+     */
+    int[] index;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         String url = "puzzle/20180313171128.png";
@@ -74,15 +74,12 @@ public class Game extends Application {
         Image image = new Image(url);
         int width = (int)image.getWidth();
         int height = (int)image.getHeight();
-        rows = 3;
+        rows = 2;
         columns = 3;
 
         imgWidth = width/columns;
         imgHeight = height/rows;
         imageView = new ImageView[rows * columns];
-
-        // 生成随机数组
-        int[] a = random(rows*columns);
 
         // 加载所有图片
         for(int i = 0, k = 0; i < rows; ++i) {
@@ -93,24 +90,38 @@ public class Game extends Application {
             }
         }
 
+        // 初始化索引数组
+        index = new int[rows * columns];
+        for(int i=0;i<rows*columns;i++){
+            index[i] = i;
+        }
+
+        // 随机生成一个隐藏图片索引并将其替代原图片
+        int hiddexIndex = getRandomNum(rows*columns);
         hiddexImageView = new ImageView(hiddenImageUrl);
         hiddexImageView.setOnMouseClicked(new PuzzleMoveOnMouse());
         hiddexImageView.setViewport(new Rectangle2D(0,0,imgWidth,imgHeight));
+        imageView[hiddexIndex] = hiddexImageView;
+        hiddenX = hiddexIndex%columns + 1;
+        hiddenY = hiddexIndex/rows + 1;
 
-        // 图片随机分布，并隐藏最后一张
+        System.err.println("图片排序中,请稍等......");
+        do{
+            // 隐藏图片自动移动,打乱图片顺序
+            hiddexImageAutoMove(rows*columns*10);
+        }while (checkGameOver());
+        System.err.println("排序完成");
+
+
+        // gridpane 绑定 imageView
         for(int i = 0, k = 0; i < rows; ++i) {
             for(int j = 0; j < columns; ++j, ++k) {
-                if(k == a.length-1){
-                    gridPane.add(hiddexImageView,j,i);
-                    break;
-                }
-                gridPane.add(imageView[a[k]],j,i);
+                gridPane.add(imageView[index[k]],j,i);
             }
         }
 
-        hiddenX = rows;
-        hiddenY = columns;
-        hiddexIndex = a[rows*columns-1];
+
+
 
         gridPane.setGridLinesVisible(true);
         Scene scene = new Scene(gridPane, width, height);
@@ -180,6 +191,17 @@ public class Game extends Application {
     }
 
     /**
+     * 获得随机数
+     *
+     * @param max 随机数不大于max
+     * @return int
+     */
+    private int getRandomNum(int max){
+        Random random = new Random();
+        return random.nextInt(max);
+    }
+
+    /**
      * 判断隐藏图片是否可以移动
      *
      * @param x x coordinate
@@ -187,6 +209,10 @@ public class Game extends Application {
      * @return {@code true} or {@code false}
      */
     private boolean hiddenImageCanMove(int x,int y){
+
+        if( x<=0 || x>columns || y<=0 || y>rows){
+            return false;
+        }
 
         if( x == hiddenX || y == hiddenY){
             if( x + y == hiddenX + hiddenY -1 || x + y == hiddenX + hiddenY +1){
@@ -213,6 +239,10 @@ public class Game extends Application {
         GridPane.setColumnIndex(imageView1, colu2);
         GridPane.setRowIndex(imageView2, row1);
         GridPane.setColumnIndex(imageView2, colu1);
+
+        int img = index[row1*columns+colu1];
+        index[row1*columns+colu1] = index[(hiddenY-1)*columns+hiddenX-1];
+        index[(hiddenY-1)*columns+hiddenX-1] = img;
         return true;
     }
 
@@ -224,16 +254,52 @@ public class Game extends Application {
      */
     private boolean checkGameOver(){
 
-        for(int i=0,k=0;i<rows;i++){
-            for(int j=0;j<columns;j++,k++){
-                Integer rowIndex = GridPane.getRowIndex(imageView[k]);
-                Integer columnIndex = GridPane.getColumnIndex(imageView[k]);
-                if( rowIndex!=null && columnIndex!=null && (rowIndex!=i || columnIndex!=j)){
-                    return false;
-                }
+        for(int i=0;i<rows*columns;i++){
+            if(index[i] != i){
+                return false;
             }
         }
         return true;
+    }
+
+    /**
+     * 隐藏图片自动移动,打乱拼图的排序
+     *
+     * @param size 图片移动次数,一般为图片数量*10
+     */
+    private void hiddexImageAutoMove(int size){
+        Random random = new Random();
+        int moveX;
+        int moveY;
+        for(int i=0;i<size;i++){
+            moveX = hiddenX;
+            moveY = hiddenY;
+            /*
+             * 0: 上移
+             * 1: 下移
+             * 2: 左移
+             * 3: 右移
+             */
+            switch (random.nextInt(4)){
+                case 0: moveY--;break;
+                case 1: moveY++;break;
+                case 2: moveX--;break;
+                case 3: moveX++;break;
+                default:break;
+            }
+
+            if(hiddenImageCanMove(moveX,moveY)){
+                int img = index[(moveY-1)*columns+moveX-1];
+                index[(moveY-1)*columns+moveX-1] = index[(hiddenY-1)*columns+hiddenX-1];
+                index[(hiddenY-1)*columns+hiddenX-1] = img;
+
+                hiddenX = moveX;
+                hiddenY = moveY;
+
+            }
+        }
+
+
     }
 
 }
